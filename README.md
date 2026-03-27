@@ -28,7 +28,7 @@ O aplicativo será desenvolvido utilizando **React Native com Expo**.
 Os protótipos das telas foram desenvolvidos utilizando o **Figma**.
 
 🔗 **Link para visualização dos protótipos:**  
-(COLE AQUI O LINK DO FIGMA)
+https://www.figma.com/design/09bB7iMYXJsxT4RxNL2dV4/Untitled?node-id=0-1&t=nyDtQCJEaC84ctkS-1
 
 ### Telas planejadas
 
