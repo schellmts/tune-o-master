@@ -10,6 +10,9 @@ module.exports = {
         primary: palette.primary,
         secondary: palette.secondary,
       },
+      fontFamily: {
+        sans: ['Poppins_400Regular'], 
+      },
     },
   },
   plugins: [],

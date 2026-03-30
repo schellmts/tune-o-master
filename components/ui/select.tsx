@@ -3,9 +3,10 @@ import {
   FlatList,
   Modal,
   Pressable,
-  Text,
   View,
 } from 'react-native';
+import AppText from './AppText';
+import { Ionicons } from '@expo/vector-icons';
 
 export type SelectOption = { label: string; value: string };
 
@@ -29,10 +30,11 @@ export function Select({
     <>
       <Pressable
         onPress={() => setOpen(true)}
-        className="rounded-lg border border-primary bg-secondary px-3 py-3 active:opacity-80">
-        <Text className={'text-white text-sm'}>
+        className="rounded-md border border-[#6f7394] bg-secondary px-3 h-14 active:opacity-80 flex-row items-center justify-between">
+        <AppText numberOfLines={1} className="text-white text-sm">
           {selected?.label ?? placeholder}
-        </Text>
+        </AppText>
+        <Ionicons name="chevron-down" size={18} color="#212338" />
       </Pressable>
 
       <Modal
@@ -54,7 +56,7 @@ export function Select({
                     onValueChange(item.value);
                     setOpen(false);
                   }}>
-                  <Text className="text-base text-white">{item.label}</Text>
+                  <AppText className="text-white text-base">{item.label}</AppText>
                 </Pressable>
               )}
             />

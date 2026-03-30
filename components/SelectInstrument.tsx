@@ -1,6 +1,7 @@
 import { Select, type SelectOption } from '@/components/ui/select';
 import { useState } from 'react';
-import { Text, View } from 'react-native';
+import { View } from 'react-native';
+import AppText from './ui/AppText';
 
 const INSTRUMENTS: SelectOption[] = [
   { label: 'Violão', value: 'violao' },
@@ -9,19 +10,21 @@ const INSTRUMENTS: SelectOption[] = [
 ];
 
 const TUNINGS: SelectOption[] = [
-  { label: 'E A D G B E (padrão)', value: 'eadgbe' },
+  { label: 'E Standard', value: 'eadgbe' },
   { label: 'Drop D', value: 'drop_d' },
   { label: 'DADGAD', value: 'dadgad' },
 ];
 
 export default function SelectInstrument() {
-  const [instrumento, setInstrumento] = useState('');
-  const [afinacao, setAfinacao] = useState('');
+  const [instrumento, setInstrumento] = useState('guitarra');
+  const [afinacao, setAfinacao] = useState('eadgbe');
 
   return (
-    <View className="flex-row flex gap-2 justify-center w-full">
-      <View className="gap-2 w-1/2">
-        <Text className="text-sm text-white">Instrumento</Text>
+    <View className="flex-row gap-3 w-full">
+      <View className="gap-1.5 flex-1">
+        <AppText numberOfLines={1} className="text-white text-base">
+          Selecione o Instrumento
+        </AppText>
         <Select
           options={INSTRUMENTS}
           value={instrumento}
@@ -29,20 +32,16 @@ export default function SelectInstrument() {
           placeholder="Selecione o instrumento"
         />
       </View>
-      <View className=" w-1/2">
-        {instrumento && (
-          <View className='gap-2'>
-            <Text className="text-sm text-white">Afinação</Text>
-            <Select
-              options={TUNINGS}
-              value={afinacao}
-              onValueChange={(value) => {
-                setAfinacao(value);
-              }}
-              placeholder="Selecione a afinação"
-            />
-          </View>
-        )}
+      <View className="gap-1.5 flex-1">
+        <AppText numberOfLines={1} className="text-white text-base">
+          Afinação
+        </AppText>
+        <Select
+          options={TUNINGS}
+          value={afinacao}
+          onValueChange={setAfinacao}
+          placeholder="Selecione a afinação"
+        />
       </View>
     </View>
   );

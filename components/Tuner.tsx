@@ -1,6 +1,7 @@
 import { Ionicons } from '@expo/vector-icons';
 import React, { useState } from 'react';
-import { FlatList, Text, TouchableOpacity, View } from 'react-native';
+import { TouchableOpacity, View } from 'react-native';
+import AppText from './ui/AppText';
 
 const MOCK_STRINGS = [
   { id: 1, note: 'E', frequency: 82.41, status: 'afinada' },
@@ -15,43 +16,32 @@ export default function Tuner() {
   const [selectedId, setSelectedId] = useState<number | null>(null);
 
   return (
-    <View className="flex-1 justify-between">
-      <View className="items-center mt-10">
-        <TouchableOpacity className="bg-secondary h-28 w-28 rounded-full items-center justify-center">
-          <Ionicons name="mic" size={48} color="white" />
+    <View className="flex-1 justify-between pt-10">
+      <View className="items-center">
+        <TouchableOpacity className="bg-secondary h-32 w-32 rounded-full items-center justify-center">
+          <Ionicons name="mic-outline" size={54} color="#202132" />
         </TouchableOpacity>
-        <Text className="text-white mt-3">
-          Toque a corda para iniciar
-        </Text>
+        <AppText className="text-white mt-4 text-[30px]">Toque a corda para Iniciar</AppText>
       </View>
-      <View className="mb-6">
-        <FlatList
-          data={MOCK_STRINGS}
-          horizontal
-          showsHorizontalScrollIndicator={false}
-          keyExtractor={(item) => item.id.toString()}
-          contentContainerStyle={{
-            paddingHorizontal: 12,
-            flexGrow: 1,
-            justifyContent: 'center',
-          }}
-          renderItem={({ item }) => {
-
+      <View className="mb-5">
+        <View className="flex-row items-center justify-between gap-2">
+          {MOCK_STRINGS.map((item, index) => {
             const isActive = selectedId === item.id;
-
             return (
               <TouchableOpacity
+                key={item.id}
                 onPress={() => setSelectedId(item.id)}
-                className={`${isActive ? 'bg-secondary' : 'bg-zinc-900'
-                  } rounded-xl px-4 py-6 mx-1 items-center justify-center min-w-[45px]`}
+                className={`${isActive ? 'bg-secondary' : 'bg-[#212338] border border-[#4a4f6e]'} flex-1 rounded-lg h-20 items-center justify-center`}
               >
-                <Text className="text-white text-lg font-bold">
-                  {item.note}
-                </Text>
+                <AppText className="text-white text-[12px] leading-3 mb-0.5">{6 - index}º</AppText>
+                <AppText className="text-white text-[34px] leading-8">{item.note}</AppText>
+                <AppText weight="thin" className="text-white text-[12px] leading-3">
+                  82Hz
+                </AppText>
               </TouchableOpacity>
             );
-          }}
-        />
+          })}
+        </View>
       </View>
     </View>
   );
