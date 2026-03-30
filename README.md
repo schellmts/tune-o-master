@@ -14,13 +14,10 @@ O aplicativo será desenvolvido utilizando **React Native com Expo**.
 - [ ] Mostrar indicador visual de afinação (grave / afinado / agudo)  
 - [ ] Seleção do instrumento (Violão, Guitarra, Baixo)  
 - [ ] Interface simples e intuitiva  
-
-### 🚀 Funcionalidades Futuras (Trabalhos Futuros)
-
 - [ ] Afinador cromático completo  
 - [ ] Histórico de afinações  
 - [ ] Personalização de instrumentos  
-- [ ] Sons de referência para afinação manual  
+
 ---
 
 ## 🎨 Protótipos de Tela
@@ -36,18 +33,16 @@ https://www.figma.com/design/09bB7iMYXJsxT4RxNL2dV4/Untitled?node-id=0-1&t=nyDtQ
 - Logo do aplicativo  
 - Botão "Iniciar Afinação"  
 - Seleção do instrumento  
-
-**Tela 2 — Tela de Afinação**
 - Nota detectada  
 - Frequência atual (Hz)  
 - Indicador visual de afinação  
 - Status: Grave / Afinado / Agudo  
 
-**Tela 3 — Tela de Configurações**
-- Seleção de instrumento  
-- Ajustes de sensibilidade  
-- Tema claro/escuro  
+**Tela 2 — Tela de Administrador**
+- Criação de instrumentos com suas afinações e variações  
+- Ajustes de permissões   
 
+***Observação, todos os cadastros serão utilizados modais
 ---
 
 ## 🗄️ Modelagem do Banco de Dados
@@ -57,11 +52,7 @@ O aplicativo utilizará **banco de dados local SQLite**, implementado através d
 O banco será responsável por armazenar:
 
 - Instrumentos disponíveis  
-- Configurações do usuário  
-- Histórico de afinações  
-
-🔗 **Link para modelagem do banco (diagrams.net):**  
-(COLE AQUI O LINK DO DIAGRAMA)
+- Configurações de administradores   
 
 ---
 
@@ -107,33 +98,24 @@ Duração estimada do projeto: **6 semanas**
 ### Sprint 1 — Planejamento e Protótipos  
 📅 Semana 1
 
-- Definir requisitos do aplicativo  
-- Criar protótipos no Figma  
-- Criar modelagem do banco  
 - Criar repositório no GitHub  
-
+- Criar modelagem do banco  
+- Criar projeto com Expo
+- Implementar navegação entre telas  
+- Criar layout inicial 
 ---
 
 ### Sprint 2 — Estrutura do Projeto  
 📅 Semana 2
 
-- Criar projeto com Expo  
-- Implementar navegação entre telas  
-- Criar layout inicial  
-
----
-
-### Sprint 3 — Captura de Áudio  
-📅 Semana 3
-
-- Implementar acesso ao microfone  
+ - Implementar acesso ao microfone  
 - Capturar sinal de áudio  
 - Exibir frequência detectada  
 
 ---
 
-### Sprint 4 — Sistema de Afinação  
-📅 Semana 4
+### Sprint 3 — Sistema de Afinação  
+📅 Semana 3
 
 - Implementar algoritmo de detecção de nota  
 - Criar indicador visual  
@@ -141,8 +123,8 @@ Duração estimada do projeto: **6 semanas**
 
 ---
 
-### Sprint 5 — Banco de Dados  
-📅 Semana 5
+### Sprint 4 — Banco de Dados  
+📅 Semana 4
 
 - Implementar SQLite  
 - Criar tabelas  
@@ -151,8 +133,8 @@ Duração estimada do projeto: **6 semanas**
 
 ---
 
-### Sprint 6 — Testes e Finalização  
-📅 Semana 6
+### Sprint 5 — Testes e Finalização  
+📅 Semana 5
 
 - Testar funcionalidades  
 - Corrigir bugs  
@@ -169,14 +151,13 @@ Duração estimada do projeto: **6 semanas**
 - Expo SQLite  
 - React Navigation  
 - Figma  
-- Diagrams.net  
-
+- Native Wind
 ---
 
 ## 📁 Repositório do Projeto
 
 🔗 **Link do repositório GitHub:**  
-(COLE AQUI O LINK DO SEU REPOSITÓRIO)
+https://github.com/schellmts/tune-o-master
 
 ---
 
