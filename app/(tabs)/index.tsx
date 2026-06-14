@@ -1,5 +1,6 @@
 import SelectInstrument from '@/components/SelectInstrument';
 import Tuner from '@/components/Tuner';
+import AppText from '@/components/ui/AppText';
 import { listarInstrumentos } from '@/database/instrumentos';
 import { useFocusEffect } from '@react-navigation/native';
 import { useSQLiteContext } from 'expo-sqlite';
@@ -101,17 +102,24 @@ export default function HomeScreen() {
   return (
     <View className="flex-1 bg-primary px-6 pt-4 pb-2">
       <View className="h-full w-full justify-between">
-        <SelectInstrument
-          instrumentos={instrumentos.map((item) => ({ label: item.nome, value: String(item.id) }))}
-          afinacoes={(instrumentoAtual?.afinacoes ?? []).map((a) => ({
-            label: a.nomeAfinacao,
-            value: a.nomeAfinacao,
-          }))}
-          instrumentoSelecionado={instrumentoSelecionado}
-          afinacaoSelecionada={afinacaoSelecionada}
-          onSelecionarInstrumento={setInstrumentoSelecionado}
-          onSelecionarAfinacao={setAfinacaoSelecionada}
-        />
+        <View>
+          <SelectInstrument
+            instrumentos={instrumentos.map((item) => ({ label: item.nome, value: String(item.id) }))}
+            afinacoes={(instrumentoAtual?.afinacoes ?? []).map((a) => ({
+              label: a.nomeAfinacao,
+              value: a.nomeAfinacao,
+            }))}
+            instrumentoSelecionado={instrumentoSelecionado}
+            afinacaoSelecionada={afinacaoSelecionada}
+            onSelecionarInstrumento={setInstrumentoSelecionado}
+            onSelecionarAfinacao={setAfinacaoSelecionada}
+          />
+          {instrumentos.length === 0 ? (
+            <AppText className="mt-3 rounded-lg border border-white/10 bg-black/20 px-3 py-2 text-center text-xs text-zinc-400">
+              Nenhum instrumento cadastrado. Acesse a aba Admin para cadastrar.
+            </AppText>
+          ) : null}
+        </View>
         <Tuner strings={cordasTuner} />
       </View>
     </View>

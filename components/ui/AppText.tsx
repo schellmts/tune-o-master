@@ -1,16 +1,11 @@
-import { Text, TextProps } from 'react-native';
+import { cssInterop } from 'nativewind';
+import { Text, type TextProps } from 'react-native';
 
 type AppTextProps = TextProps & {
   weight?: 'thin' | 'light' | 'regular' | 'semibold' | 'bold';
 };
 
-export default function AppText({
-  children,
-  style,
-  weight = 'regular',
-  ...props
-}: AppTextProps) {
-
+function AppText({ children, style, weight = 'regular', ...props }: AppTextProps) {
   const fontMap = {
     thin: 'Poppins_100Thin',
     light: 'Poppins_300Light',
@@ -20,16 +15,12 @@ export default function AppText({
   };
 
   return (
-    <Text
-      style={[
-        {
-          fontFamily: fontMap[weight],
-        },
-        style,
-      ]}
-      {...props}
-    >
+    <Text style={[{ fontFamily: fontMap[weight] }, style]} {...props}>
       {children}
     </Text>
   );
 }
+
+cssInterop(AppText, { className: 'style' });
+
+export default AppText;

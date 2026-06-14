@@ -53,6 +53,7 @@ export default function RootLayout() {
             name="(tabs)"
             options={{
               title: "Tune'o Master",
+              headerTitle: "Tune'o Master",
             }}
           />
         </Stack>

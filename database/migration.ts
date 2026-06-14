@@ -96,4 +96,60 @@ export async function runMigrations(db: SQLiteDatabase): Promise<void> {
       new Date().toISOString()
     );
   }
+
+  const instrumentosVazios = await db.getFirstAsync<{ total: number }>(
+    'SELECT COUNT(1) as total FROM instrumentos'
+  );
+  if (!instrumentosVazios || instrumentosVazios.total === 0) {
+    await db.runAsync(
+      'INSERT INTO instrumentos (nome, afinacao) VALUES (?, ?)',
+      'Guitarra',
+      JSON.stringify({
+        afinacoes: [
+          {
+            nomeAfinacao: 'E Standard',
+            quantidadeCordas: 6,
+            cordas: [
+              { nota: 'E', frequencia: '82.41' },
+              { nota: 'A', frequencia: '110.00' },
+              { nota: 'D', frequencia: '146.83' },
+              { nota: 'G', frequencia: '196.00' },
+              { nota: 'B', frequencia: '246.94' },
+              { nota: 'E', frequencia: '329.63' },
+            ],
+          },
+          {
+            nomeAfinacao: 'Drop D',
+            quantidadeCordas: 6,
+            cordas: [
+              { nota: 'D', frequencia: '73.42' },
+              { nota: 'A', frequencia: '110.00' },
+              { nota: 'D', frequencia: '146.83' },
+              { nota: 'G', frequencia: '196.00' },
+              { nota: 'B', frequencia: '246.94' },
+              { nota: 'E', frequencia: '329.63' },
+            ],
+          },
+        ],
+      })
+    );
+    await db.runAsync(
+      'INSERT INTO instrumentos (nome, afinacao) VALUES (?, ?)',
+      'Contrabaixo',
+      JSON.stringify({
+        afinacoes: [
+          {
+            nomeAfinacao: 'E Standard',
+            quantidadeCordas: 4,
+            cordas: [
+              { nota: 'E', frequencia: '41.20' },
+              { nota: 'A', frequencia: '55.00' },
+              { nota: 'D', frequencia: '73.42' },
+              { nota: 'G', frequencia: '98.00' },
+            ],
+          },
+        ],
+      })
+    );
+  }
 }
