@@ -3,7 +3,7 @@ import AppText from '@/components/ui/AppText';
 import { useAdminAuth } from '@/contexts/admin-auth';
 import { autenticarAdmin } from '@/database/admins';
 import { useSQLiteContext } from 'expo-sqlite';
-import { router } from 'expo-router';
+import { Link } from 'expo-router';
 import { useState } from 'react';
 import { TextInput, TouchableOpacity, View } from 'react-native';
 
@@ -70,29 +70,29 @@ export default function AdminIndexScreen() {
       <AppText className="text-white text-xl">Painel Administrador</AppText>
 
       <View className="mt-4 gap-3">
-        <TouchableOpacity
-          onPress={() => router.push('/admin/instrumentos')}
-          className="rounded-lg bg-[#343753] border border-white/10 p-4 flex-row items-center justify-between">
-          <View>
-            <AppText className="text-white text-base">Cadastro de Instrumentos</AppText>
-            <AppText className="text-zinc-400 text-xs mt-1">
-              Cadastre instrumentos e suas afinacoes.
-            </AppText>
-          </View>
-          <Ionicons name="arrow-forward" size={18} color="#cbd5e1" />
-        </TouchableOpacity>
+        <Link href="/admin/instrumentos" asChild>
+          <TouchableOpacity className="rounded-lg bg-[#343753] border border-white/10 p-4 flex-row items-center justify-between">
+            <View>
+              <AppText className="text-white text-base">Cadastro de Instrumentos</AppText>
+              <AppText className="text-zinc-400 text-xs mt-1">
+                Cadastre instrumentos e suas afinacoes.
+              </AppText>
+            </View>
+            <Ionicons name="arrow-forward" size={18} color="#cbd5e1" />
+          </TouchableOpacity>
+        </Link>
 
-        <TouchableOpacity
-          onPress={() => router.push('/admin/administradores')}
-          className="rounded-lg bg-[#343753] border border-white/10 p-4 flex-row items-center justify-between">
-          <View>
-            <AppText className="text-white text-base">Cadastro de Administradores</AppText>
-            <AppText className="text-zinc-400 text-xs mt-1">
-              Controle de acesso ao painel admin.
-            </AppText>
-          </View>
-          <Ionicons name="arrow-forward" size={18} color="#cbd5e1" />
-        </TouchableOpacity>
+        <Link href="/admin/administradores" asChild>
+          <TouchableOpacity className="rounded-lg bg-[#343753] border border-white/10 p-4 flex-row items-center justify-between">
+            <View>
+              <AppText className="text-white text-base">Cadastro de Administradores</AppText>
+              <AppText className="text-zinc-400 text-xs mt-1">
+                Controle de acesso ao painel admin.
+              </AppText>
+            </View>
+            <Ionicons name="arrow-forward" size={18} color="#cbd5e1" />
+          </TouchableOpacity>
+        </Link>
       </View>
     </View>
   );
