@@ -1,23 +1,24 @@
 import { Select, type SelectOption } from '@/components/ui/select';
-import { useState } from 'react';
 import { View } from 'react-native';
 import AppText from './ui/AppText';
 
-const INSTRUMENTS: SelectOption[] = [
-  { label: 'Violão', value: 'violao' },
-  { label: 'Guitarra', value: 'guitarra' },
-  { label: 'Baixo', value: 'baixo' },
-];
+type Props = {
+  instrumentos: SelectOption[];
+  afinacoes: SelectOption[];
+  instrumentoSelecionado: string;
+  afinacaoSelecionada: string;
+  onSelecionarInstrumento: (value: string) => void;
+  onSelecionarAfinacao: (value: string) => void;
+};
 
-const TUNINGS: SelectOption[] = [
-  { label: 'E Standard', value: 'eadgbe' },
-  { label: 'Drop D', value: 'drop_d' },
-  { label: 'DADGAD', value: 'dadgad' },
-];
-
-export default function SelectInstrument() {
-  const [instrumento, setInstrumento] = useState('guitarra');
-  const [afinacao, setAfinacao] = useState('eadgbe');
+export default function SelectInstrument({
+  instrumentos,
+  afinacoes,
+  instrumentoSelecionado,
+  afinacaoSelecionada,
+  onSelecionarInstrumento,
+  onSelecionarAfinacao,
+}: Props) {
 
   return (
     <View className="flex-row gap-3 w-full">
@@ -26,10 +27,10 @@ export default function SelectInstrument() {
           Selecione o Instrumento
         </AppText>
         <Select
-          options={INSTRUMENTS}
-          value={instrumento}
-          onValueChange={setInstrumento}
-          placeholder="Selecione o instrumento"
+          options={instrumentos}
+          value={instrumentoSelecionado}
+          onValueChange={onSelecionarInstrumento}
+          placeholder="Cadastre um instrumento no admin"
         />
       </View>
       <View className="gap-1.5 flex-1">
@@ -37,10 +38,10 @@ export default function SelectInstrument() {
           Afinação
         </AppText>
         <Select
-          options={TUNINGS}
-          value={afinacao}
-          onValueChange={setAfinacao}
-          placeholder="Selecione a afinação"
+          options={afinacoes}
+          value={afinacaoSelecionada}
+          onValueChange={onSelecionarAfinacao}
+          placeholder={afinacoes.length > 0 ? 'Selecione a afinação' : 'Sem afinacoes'}
         />
       </View>
     </View>

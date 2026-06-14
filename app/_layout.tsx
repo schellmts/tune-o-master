@@ -2,6 +2,7 @@ import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native
 import { Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import 'react-native-reanimated';
+import DatabaseProvider from '../database/db';
 import '../global.css';
 
 import { useColorScheme } from '@/hooks/use-color-scheme';
@@ -33,29 +34,31 @@ export default function RootLayout() {
   }
 
   return (
-    <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-      <Stack
-        screenOptions={{
-          headerStyle: {
-            backgroundColor: '#2b2d44',
-          },
-          headerTintColor: '#fff',
-          headerTitleAlign: 'center',
-          headerTitleStyle: {
-            fontFamily: 'Poppins_600SemiBold',
-            fontSize: 20,
-          },
-        }}
-      >
-        <Stack.Screen
-          name="(tabs)"
-          options={{
-            title: "Tune'o Master",
+    <DatabaseProvider>
+      <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
+        <Stack
+          screenOptions={{
+            headerStyle: {
+              backgroundColor: '#2b2d44',
+            },
+            headerTintColor: '#fff',
+            headerTitleAlign: 'center',
+            headerTitleStyle: {
+              fontFamily: 'Poppins_600SemiBold',
+              fontSize: 20,
+            },
           }}
-        />
-      </Stack>
+        >
+          <Stack.Screen
+            name="(tabs)"
+            options={{
+              title: "Tune'o Master",
+            }}
+          />
+        </Stack>
 
-      <StatusBar style="light" />
-    </ThemeProvider>
+        <StatusBar style="light" />
+      </ThemeProvider>
+    </DatabaseProvider>
   );
 }
