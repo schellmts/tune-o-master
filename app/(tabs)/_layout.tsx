@@ -43,6 +43,14 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
+        name="mapa"
+        options={{
+          title: 'Lojas',
+          headerTitle: 'Lojas proximas',
+          tabBarIcon: ({ color }) => <Ionicons size={20} name="map-outline" color={color} />,
+        }}
+      />
+      <Tabs.Screen
         name="admin"
         options={{
           title: 'Admin',
