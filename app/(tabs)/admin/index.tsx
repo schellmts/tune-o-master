@@ -2,6 +2,9 @@ import { Ionicons } from '@expo/vector-icons';
 import AppText from '@/components/ui/AppText';
 import { useAdminAuth } from '@/contexts/admin-auth';
 import { autenticarAdmin } from '@/database/admins';
+import { loginAdminSchema } from '@/validation/schemas';
+import { validar } from '@/validation/parse';
+import { hapticErro, hapticLeve, hapticSucesso } from '@/utils/eas-interactions';
 import { useSQLiteContext } from 'expo-sqlite';
 import { Link } from 'expo-router';
 import { useState } from 'react';
@@ -16,12 +19,19 @@ export default function AdminIndexScreen() {
 
   const entrar = async () => {
     setErro('');
+    const parsed = validar(loginAdminSchema, { usuario, senha });
+    if (!parsed.ok) {
+      setErro(parsed.message);
+      return;
+    }
     try {
-      const admin = await autenticarAdmin(db, usuario, senha);
+      const admin = await autenticarAdmin(db, parsed.data.usuario, parsed.data.senha);
       if (!admin) {
         setErro('Usuario ou senha invalidos.');
+        await hapticErro();
         return;
       }
+      await hapticSucesso();
       setLogado(true);
     } catch (e) {
       setErro('Falha ao validar acesso admin.');
@@ -93,6 +103,15 @@ export default function AdminIndexScreen() {
             <Ionicons name="arrow-forward" size={18} color="#cbd5e1" />
           </TouchableOpacity>
         </Link>
+
+        <TouchableOpacity
+          onPress={() => {
+            void hapticLeve();
+            setLogado(false);
+          }}
+          className="rounded-lg border border-red-400/40 bg-red-500/10 p-4 items-center mt-2">
+          <AppText className="text-red-300 font-semibold">Sair do painel</AppText>
+        </TouchableOpacity>
       </View>
     </View>
   );

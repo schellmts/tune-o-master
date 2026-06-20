@@ -11,13 +11,16 @@
     "ios": {
       "supportsTablet": true,
       "infoPlist": {
-        "NSMicrophoneUsageDescription": "O app precisa do microfone para detectar a frequência das cordas e afinar o instrumento."
+        "NSMicrophoneUsageDescription": "O app precisa do microfone para detectar a frequência das cordas e afinar o instrumento.",
+        "NSLocationWhenInUseUsageDescription": "O app usa sua localização para encontrar lojas de instrumentos próximas no mapa."
       }
     },
     "android": {
       "permissions": [
         "RECORD_AUDIO",
-        "MODIFY_AUDIO_SETTINGS"
+        "MODIFY_AUDIO_SETTINGS",
+        "ACCESS_COARSE_LOCATION",
+        "ACCESS_FINE_LOCATION"
       ],
       "adaptiveIcon": {
         "backgroundColor": "#E6F4FE",
@@ -49,7 +52,13 @@
       ],
       "expo-font",
       "expo-audio",
-      "expo-sqlite"
+      "expo-sqlite",
+      [
+        "expo-location",
+        {
+          "locationWhenInUsePermission": "Permitir que o Tune'o Master use sua localização para encontrar lojas de instrumentos próximas."
+        }
+      ]
     ],
     "experiments": {
       "typedRoutes": true

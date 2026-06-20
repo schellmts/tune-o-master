@@ -9,16 +9,20 @@ import {
   type CordaAfinacao,
   type Instrumento,
 } from '@/database/instrumentos';
+import { afinacaoSchema, instrumentoSchema } from '@/validation/schemas';
+import { validar } from '@/validation/parse';
+import { confirmarAcao, hapticSucesso } from '@/utils/eas-interactions';
 import { useFocusEffect } from '@react-navigation/native';
 import { useSQLiteContext } from 'expo-sqlite';
-import { router } from 'expo-router';
 import { useCallback, useState } from 'react';
 import { Modal, RefreshControl, ScrollView, TextInput, TouchableOpacity, View } from 'react-native';
 
 function resumoAfinacoes(afinacaoBruta: string) {
   try {
     const parsed = JSON.parse(afinacaoBruta) as { afinacoes?: AfinacaoInstrumento[]; nomeAfinacao?: string };
-    if (Array.isArray(parsed.afinacoes)) return `${parsed.afinacoes.length} afinacao(oes)`;
+    if (Array.isArray(parsed.afinacoes) && parsed.afinacoes.length > 0) {
+      return parsed.afinacoes.map((a) => a.nomeAfinacao).join(', ');
+    }
     return parsed.nomeAfinacao ?? '1 afinacao';
   } catch {
     return 'Afinacao cadastrada';
@@ -96,26 +100,22 @@ export default function AdminInstrumentosScreen() {
   const adicionarAfinacao = () => {
     setFeedback('');
     const qtd = Number.parseInt(quantidadeCordas, 10);
-    if (Number.isNaN(qtd) || qtd < 1) {
-      setFeedback('Quantidade de cordas invalida.');
-      return;
-    }
-    const cordasValidas = cordas.slice(0, qtd).map((c) => ({
+    const cordasValidas = cordas.slice(0, Number.isNaN(qtd) ? cordas.length : qtd).map((c) => ({
       nota: c.nota.trim(),
       frequencia: c.frequencia.trim(),
     }));
-    if (cordasValidas.some((c) => !c.nota)) {
-      setFeedback('Preencha as notas de todas as cordas.');
+
+    const parsed = validar(afinacaoSchema, {
+      nomeAfinacao: nomeAfinacao.trim() || `Afinacao ${afinacoesCadastro.length + 1}`,
+      quantidadeCordas: qtd,
+      cordas: cordasValidas,
+    });
+    if (!parsed.ok) {
+      setFeedback(parsed.message);
       return;
     }
-    setAfinacoesCadastro((prev) => [
-      ...prev,
-      {
-        nomeAfinacao: nomeAfinacao.trim() || `Afinacao ${prev.length + 1}`,
-        quantidadeCordas: qtd,
-        cordas: cordasValidas,
-      },
-    ]);
+
+    setAfinacoesCadastro((prev) => [...prev, parsed.data]);
     setNomeAfinacao(`Afinacao ${afinacoesCadastro.length + 2}`);
     setQuantidadeCordas('6');
     setCordas(Array.from({ length: 6 }, () => ({ nota: '', frequencia: '' })));
@@ -128,35 +128,39 @@ export default function AdminInstrumentosScreen() {
 
   const salvarInstrumento = async () => {
     setFeedback('');
-    if (!nomeInstrumento.trim()) {
-      setFeedback('Informe o nome do instrumento.');
+    const parsed = validar(instrumentoSchema, {
+      nome: nomeInstrumento,
+      afinacoes: afinacoesCadastro,
+    });
+    if (!parsed.ok) {
+      setFeedback(parsed.message);
       return;
     }
-    if (afinacoesCadastro.length === 0) {
-      setFeedback('Adicione pelo menos uma afinacao.');
-      return;
-    }
-    await inserirInstrumento(db, nomeInstrumento, afinacoesCadastro);
+    await inserirInstrumento(db, parsed.data.nome, parsed.data.afinacoes);
     setNomeInstrumento('');
     setAfinacoesCadastro([]);
     setNomeAfinacao('E standard');
     setQuantidadeCordas('6');
     setCordas(Array.from({ length: 6 }, () => ({ nota: '', frequencia: '' })));
     setFeedback('Instrumento cadastrado com sucesso.');
+    await hapticSucesso();
     await carregarInstrumentos();
+  };
+
+  const excluirInstrumento = (item: Instrumento) => {
+    confirmarAcao(
+      'Excluir instrumento',
+      `Deseja remover "${item.nome}"? Essa acao nao pode ser desfeita.`,
+      () => {
+        void apagarInstrumento(db, item.id).then(carregarInstrumentos);
+      }
+    );
   };
 
   if (!logado) return null;
 
   return (
-    <View className="flex-1 bg-primary px-4 pt-6">
-      <View className="flex-row items-center justify-between">
-        <AppText className="text-white text-xl">Cadastro de Instrumentos</AppText>
-        <TouchableOpacity onPress={() => router.back()}>
-          <Ionicons name="arrow-back" size={20} color="#fff" />
-        </TouchableOpacity>
-      </View>
-
+    <View className="flex-1 bg-primary px-4 pt-2">
       {!!feedback && <AppText className="text-zinc-300 text-xs mt-2">{feedback}</AppText>}
 
       <ScrollView
@@ -168,17 +172,23 @@ export default function AdminInstrumentosScreen() {
         </AppText>
 
         <View className="mt-4 gap-2">
-          {instrumentos.map((item) => (
-            <View key={item.id} className="rounded-lg bg-[#343753] border border-white/10 p-3">
-              <View className="flex-row items-center justify-between">
-                <AppText className="text-white text-base">{item.nome}</AppText>
-                <TouchableOpacity onPress={() => void apagarInstrumento(db, item.id).then(carregarInstrumentos)}>
-                  <Ionicons name="trash-outline" size={16} color="#f87171" />
-                </TouchableOpacity>
+          {instrumentos.length === 0 ? (
+            <AppText className="text-zinc-400 text-sm rounded-lg border border-white/10 bg-[#343753] p-3">
+              Nenhum instrumento cadastrado ainda.
+            </AppText>
+          ) : (
+            instrumentos.map((item) => (
+              <View key={item.id} className="rounded-lg bg-[#343753] border border-white/10 p-3">
+                <View className="flex-row items-center justify-between">
+                  <AppText className="text-white text-base">{item.nome}</AppText>
+                  <TouchableOpacity onPress={() => excluirInstrumento(item)}>
+                    <Ionicons name="trash-outline" size={16} color="#f87171" />
+                  </TouchableOpacity>
+                </View>
+                <AppText className="text-zinc-400 text-xs mt-1">{resumoAfinacoes(item.afinacao)}</AppText>
               </View>
-              <AppText className="text-zinc-400 text-xs mt-1">{resumoAfinacoes(item.afinacao)}</AppText>
-            </View>
-          ))}
+            ))
+          )}
         </View>
 
         <View className="mt-5 rounded-lg bg-[#343753] border border-white/10 p-3">

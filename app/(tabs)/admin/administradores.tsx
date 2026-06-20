@@ -1,10 +1,11 @@
-import { Ionicons } from '@expo/vector-icons';
 import AppText from '@/components/ui/AppText';
 import { useRequireAdmin } from '@/hooks/use-require-admin';
 import { criarAdmin, listarAdmins } from '@/database/admins';
+import { criarAdminSchema } from '@/validation/schemas';
+import { validar } from '@/validation/parse';
+import { hapticErro, hapticSucesso } from '@/utils/eas-interactions';
 import { useFocusEffect } from '@react-navigation/native';
 import { useSQLiteContext } from 'expo-sqlite';
-import { router } from 'expo-router';
 import { useCallback, useState } from 'react';
 import { RefreshControl, ScrollView, TextInput, TouchableOpacity, View } from 'react-native';
 
@@ -40,32 +41,31 @@ export default function AdminAdministradoresScreen() {
 
   const cadastrarAdmin = async () => {
     setFeedback('');
-    if (!novoAdminUsuario.trim() || !novoAdminSenha.trim()) {
-      setFeedback('Preencha usuario e senha.');
+    const parsed = validar(criarAdminSchema, {
+      usuario: novoAdminUsuario,
+      senha: novoAdminSenha,
+    });
+    if (!parsed.ok) {
+      setFeedback(parsed.message);
       return;
     }
     try {
-      await criarAdmin(db, novoAdminUsuario, novoAdminSenha);
+      await criarAdmin(db, parsed.data.usuario, parsed.data.senha);
       setNovoAdminUsuario('');
       setNovoAdminSenha('');
       setFeedback('Administrador cadastrado.');
+      await hapticSucesso();
       await carregarAdmins();
     } catch {
       setFeedback('Usuario ja existe ou falha ao cadastrar.');
+      await hapticErro();
     }
   };
 
   if (!logado) return null;
 
   return (
-    <View className="flex-1 bg-primary px-4 pt-6">
-      <View className="flex-row items-center justify-between">
-        <AppText className="text-white text-xl">Cadastro de Administradores</AppText>
-        <TouchableOpacity onPress={() => router.back()}>
-          <Ionicons name="arrow-back" size={20} color="#fff" />
-        </TouchableOpacity>
-      </View>
-
+    <View className="flex-1 bg-primary px-4 pt-2">
       {!!feedback && <AppText className="text-zinc-300 text-xs mt-2">{feedback}</AppText>}
 
       <ScrollView
