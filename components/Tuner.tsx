@@ -3,6 +3,11 @@ import { requestRecordingPermissionsAsync, setAudioModeAsync } from 'expo-audio'
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { TouchableOpacity, View } from 'react-native';
 import { WebView } from 'react-native-webview';
+import {
+  compartilharTexto,
+  hapticLeve,
+  hapticSucesso,
+} from '@/utils/eas-interactions';
 import { HTML_TUNER } from './tunerHtml';
 import AppText from './ui/AppText';
 
@@ -15,9 +20,13 @@ function inject(webView: WebView | null, code: string) {
   webView?.injectJavaScript(code);
 }
 
-type Props = { strings: TunerString[] };
+type Props = {
+  strings: TunerString[];
+  instrumentName?: string;
+  tuningName?: string;
+};
 
-export default function Tuner({ strings }: Props) {
+export default function Tuner({ strings, instrumentName, tuningName }: Props) {
   const [selectedId, setSelectedId] = useState<number>(1);
   const [currentFreq, setCurrentFreq] = useState(0);
   const [isListening, setIsListening] = useState(false);
@@ -26,6 +35,7 @@ export default function Tuner({ strings }: Props) {
   const webReadyRef = useRef(false);
   const webViewRef = useRef<WebView>(null);
   const startAttempts = useRef(0);
+  const cordaAfinadaRef = useRef(false);
 
   useEffect(() => {
     webReadyRef.current = webReady;
@@ -67,6 +77,34 @@ export default function Tuner({ strings }: Props) {
     }
   }
 
+  useEffect(() => {
+    const afinada =
+      isListening && currentFreq > 0 && target && Math.abs(centsOff) <= TOLERANCE_CENTS;
+
+    if (afinada && !cordaAfinadaRef.current) {
+      cordaAfinadaRef.current = true;
+      void hapticSucesso();
+    } else if (!afinada) {
+      cordaAfinadaRef.current = false;
+    }
+  }, [isListening, currentFreq, centsOff, target]);
+
+  const compartilharResultado = async () => {
+    if (!target || currentFreq <= 0) return;
+    await hapticLeve();
+    const titulo = "Resultado da afinacao - Tune'o Master";
+    const mensagem = [
+      instrumentName ? `Instrumento: ${instrumentName}` : null,
+      tuningName ? `Afinacao: ${tuningName}` : null,
+      `Corda: ${target.note}`,
+      `Detectado: ${detectedHz} Hz (alvo ~${targetHz} Hz)`,
+      `Status: ${status}`,
+    ]
+      .filter(Boolean)
+      .join('\n');
+    await compartilharTexto(titulo, mensagem);
+  };
+
   const toggleTuner = async () => {
     if (strings.length === 0) {
       addLog('Sem cordas cadastradas nessa afinacao.');
@@ -76,10 +114,13 @@ export default function Tuner({ strings }: Props) {
     if (isListening) {
       setIsListening(false);
       setCurrentFreq(0);
+      cordaAfinadaRef.current = false;
       inject(webViewRef.current, "(function(){if(window.__tunerCommand)window.__tunerCommand('stop');true;})();");
       addLog('Microfone desligado.');
       return;
     }
+
+    await hapticLeve();
 
     try {
       addLog('Pedindo permissão de áudio...');
@@ -199,6 +240,15 @@ export default function Tuner({ strings }: Props) {
         <AppText className="mt-1 text-center text-xs text-zinc-500">
           {target ? `Alvo: ${target.note} ~${targetHz} Hz` : 'Sem alvo selecionado'}
         </AppText>
+
+        {isListening && currentFreq > 0 && target ? (
+          <TouchableOpacity
+            onPress={() => void compartilharResultado()}
+            className="mt-3 flex-row items-center gap-2 rounded-lg border border-white/20 px-4 py-2">
+            <Ionicons name="share-social-outline" size={16} color="#cbd5e1" />
+            <AppText className="text-xs text-zinc-300">Compartilhar resultado</AppText>
+          </TouchableOpacity>
+        ) : null}
       </View>
 
       <View className="mb-10 px-2">
@@ -208,7 +258,10 @@ export default function Tuner({ strings }: Props) {
             return (
               <TouchableOpacity
                 key={item.id}
-                onPress={() => setSelectedId(item.id)}
+                onPress={() => {
+                  void hapticLeve();
+                  setSelectedId(item.id);
+                }}
                 className={`${isActive ? 'border-secondary bg-secondary' : 'border-[#4a4f6e] bg-[#212338]'
                   } flex-1 rounded-lg border h-24 items-center justify-center`}>
                 <AppText className="mb-0.5 text-[10px] text-white">{strings.length - index}ª</AppText>

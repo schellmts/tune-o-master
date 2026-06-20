@@ -120,7 +120,11 @@ export default function HomeScreen() {
             </AppText>
           ) : null}
         </View>
-        <Tuner strings={cordasTuner} />
+        <Tuner
+          strings={cordasTuner}
+          instrumentName={instrumentoAtual?.nome}
+          tuningName={afinacaoAtual?.nomeAfinacao}
+        />
       </View>
     </View>
   );

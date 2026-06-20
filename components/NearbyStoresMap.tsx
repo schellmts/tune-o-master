@@ -1,7 +1,9 @@
 import AppText from '@/components/ui/AppText';
 import { HTML_MAP } from '@/components/mapHtml';
 import { buscarLojasProximas, lojasDemonstracao, type LojaInstrumento } from '@/services/overpass';
+import { abrirNoMapa, compartilharTexto, hapticLeve } from '@/utils/eas-interactions';
 import * as Location from 'expo-location';
+import { Ionicons } from '@expo/vector-icons';
 import { useCallback, useRef, useState } from 'react';
 import { ActivityIndicator, ScrollView, TouchableOpacity, View } from 'react-native';
 import { WebView } from 'react-native-webview';
@@ -48,6 +50,7 @@ export default function NearbyStoresMap() {
     setCarregando(true);
     setErro('');
     setAviso('');
+    await hapticLeve();
     try {
       const { status } = await Location.requestForegroundPermissionsAsync();
       if (status !== 'granted') {
@@ -84,6 +87,19 @@ export default function NearbyStoresMap() {
       setCarregando(false);
     }
   }, [atualizarMapa]);
+
+  const abrirLoja = async (loja: LojaInstrumento) => {
+    await hapticLeve();
+    await abrirNoMapa(loja.lat, loja.lng, loja.nome);
+  };
+
+  const compartilharLoja = async (loja: LojaInstrumento) => {
+    await hapticLeve();
+    await compartilharTexto(
+      loja.nome,
+      `${loja.nome}\nCoordenadas: ${loja.lat.toFixed(5)}, ${loja.lng.toFixed(5)}\nMapa: https://www.openstreetmap.org/?mlat=${loja.lat}&mlon=${loja.lng}`
+    );
+  };
 
   return (
     <View className="flex-1 bg-primary">
@@ -128,6 +144,19 @@ export default function NearbyStoresMap() {
             <AppText className="text-zinc-500 text-xs mt-1">
               {loja.lat.toFixed(5)}, {loja.lng.toFixed(5)}
             </AppText>
+            <View className="mt-2 flex-row gap-2">
+              <TouchableOpacity
+                onPress={() => void abrirLoja(loja)}
+                className="flex-1 flex-row items-center justify-center gap-1 rounded border border-white/20 py-2">
+                <Ionicons name="navigate-outline" size={14} color="#cbd5e1" />
+                <AppText className="text-xs text-zinc-300">Abrir no mapa</AppText>
+              </TouchableOpacity>
+              <TouchableOpacity
+                onPress={() => void compartilharLoja(loja)}
+                className="flex-row items-center justify-center gap-1 rounded border border-white/20 px-3 py-2">
+                <Ionicons name="share-social-outline" size={14} color="#cbd5e1" />
+              </TouchableOpacity>
+            </View>
           </View>
         ))}
       </ScrollView>

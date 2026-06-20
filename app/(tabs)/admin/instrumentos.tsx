@@ -11,6 +11,7 @@ import {
 } from '@/database/instrumentos';
 import { afinacaoSchema, instrumentoSchema } from '@/validation/schemas';
 import { validar } from '@/validation/parse';
+import { confirmarAcao, hapticSucesso } from '@/utils/eas-interactions';
 import { useFocusEffect } from '@react-navigation/native';
 import { useSQLiteContext } from 'expo-sqlite';
 import { useCallback, useState } from 'react';
@@ -142,7 +143,18 @@ export default function AdminInstrumentosScreen() {
     setQuantidadeCordas('6');
     setCordas(Array.from({ length: 6 }, () => ({ nota: '', frequencia: '' })));
     setFeedback('Instrumento cadastrado com sucesso.');
+    await hapticSucesso();
     await carregarInstrumentos();
+  };
+
+  const excluirInstrumento = (item: Instrumento) => {
+    confirmarAcao(
+      'Excluir instrumento',
+      `Deseja remover "${item.nome}"? Essa acao nao pode ser desfeita.`,
+      () => {
+        void apagarInstrumento(db, item.id).then(carregarInstrumentos);
+      }
+    );
   };
 
   if (!logado) return null;
@@ -169,7 +181,7 @@ export default function AdminInstrumentosScreen() {
               <View key={item.id} className="rounded-lg bg-[#343753] border border-white/10 p-3">
                 <View className="flex-row items-center justify-between">
                   <AppText className="text-white text-base">{item.nome}</AppText>
-                  <TouchableOpacity onPress={() => void apagarInstrumento(db, item.id).then(carregarInstrumentos)}>
+                  <TouchableOpacity onPress={() => excluirInstrumento(item)}>
                     <Ionicons name="trash-outline" size={16} color="#f87171" />
                   </TouchableOpacity>
                 </View>

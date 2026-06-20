@@ -3,6 +3,7 @@ import { useRequireAdmin } from '@/hooks/use-require-admin';
 import { criarAdmin, listarAdmins } from '@/database/admins';
 import { criarAdminSchema } from '@/validation/schemas';
 import { validar } from '@/validation/parse';
+import { hapticErro, hapticSucesso } from '@/utils/eas-interactions';
 import { useFocusEffect } from '@react-navigation/native';
 import { useSQLiteContext } from 'expo-sqlite';
 import { useCallback, useState } from 'react';
@@ -53,9 +54,11 @@ export default function AdminAdministradoresScreen() {
       setNovoAdminUsuario('');
       setNovoAdminSenha('');
       setFeedback('Administrador cadastrado.');
+      await hapticSucesso();
       await carregarAdmins();
     } catch {
       setFeedback('Usuario ja existe ou falha ao cadastrar.');
+      await hapticErro();
     }
   };
 
